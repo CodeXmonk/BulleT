@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: auto;
+  padding-top: 40px;
+  position: relative;
+  width: 900px;
+}
+.bulleT { font: 10px sans-serif; display:block;margin-left:auto;margin-right:auto;}
+.bulleT .marker.s0 { stroke: #4D4D4D; stroke-width: 2px;} /* #c6dbef */
+.bulleT .marker.s1 { fill-opacity:0; stroke: #000; stroke-width: 2px; }
+.bulleT .tick line { stroke: #666; stroke-width: .5px; }
+
+.bulleT .range.s0 { fill: #005C7A; stroke: #005C7A; stroke-width: 1px; } /* #4D4D4D */
+.bulleT .range.s1 { fill: #29A3CC; } /* #999999 */
+.bulleT .range.s2 { fill: #c6dbef; } /*  */
+.bulleT .range.s3 { fill: #c6dbef; stroke: #005C7A; stroke-width: 1px; } /* #eee */
+.bulleT .range.s4 { fill: #29A3CC; } /* #999999 */ 
+.bulleT .range.s5 { fill: #005C7A; } /* #4D4D4D */
+
+.bulleT .measure.s0 { fill: #4D4D4D; } /* #27408B */
+.bulleT .measure.s1 { fill: #999999; } /* #4169E1 */ 
+.bulleT .measure.s2 { fill: #eee; } /* #c6dbef */
+.bulleT .measure.s3 { fill: #999999; } /* #4169E1 */
+.bulleT .measure.s4 { fill: #4D4D4D; } /* #27408B */
+
+.bulleT .title { font-size: 14px; font-weight: bold; }
+.bulleT .subtitle.s04 { fill: #000000; font-size: 16px; font-weight: bold;} 
+.bulleT .subtitle.s13 { fill: #999999; font-size: 12px; font-weight: bold;}
+.bulleT .subtitle.s2  { fill: #999999; font-size: 10px;}
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="bulleT.js"></script>
+
+<div id="svg"></div>
+
+<script>
+// just for now and simplicity
+var Tscore_Man_Height = 50; 
+var Tscore_Woman_Height = 50;
+var Tscore_Man_Weight = 50; 
+var Tscore_Woman_Weight = 50;
+// terjedelem is the hungarian translation of the statistical term of range
+var data = [
+  {"title":"Man (height)","subtitle":Tscore_Man_Height,"terjedelem":[20,80],"ranges":[30,40,50,60,70],"measures":[38.93,47.15,63.59,71.81],"markers":[55.37,Tscore_Man_Height]},
+  {"title":"Woman (height)","subtitle":Tscore_Woman_Height,"terjedelem":[20,80],"ranges":[30,40,50,60,70],"measures":[27.02,35.82,53.44,62.24],"markers":[44.63,Tscore_Woman_Height]},
+  {"title":"Man (weight)","subtitle":Tscore_Woman_Weight,"terjedelem":[20,80],"ranges":[30,40,50,60,70],"measures":[39.70,48.31,65.54,74.15],"markers":[56.93,Tscore_Man_Weight]},
+  {"title":"Woman (weight)","subtitle":Tscore_Woman_Weight,"terjedelem":[20,80],"ranges":[30,40,50,60,70],"measures":[29.24,36.21,50.14,57.11],"markers":[43.18,Tscore_Woman_Weight]}
+]
+
+var margin = {top: 5, right: 20, bottom: 20, left: 120},
+    width = 550 - margin.left - margin.right,
+    height = 50 - margin.top - margin.bottom;
+
+var chart = d3.bulleT()
+    .width(width)
+    .height(height);
+    
+function bulleT() {
+  var svg = d3.select("body").selectAll("svg")
+      .data(data)
+    .enter().append("svg")
+      .attr("class", "bulleT")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(chart);
+
+  var title = svg.append("g")
+      .style("text-anchor", "end")
+      .attr("transform", "translate(-6," + height / 2 + ")");
+
+  title.append("text")
+      .attr("class", "title")
+      .text(function(d) { return d.title; });
+
+  title.append("text")
+      .attr("class",function(d) {
+          if ( (d.markers[0] < 30) || (70 < d.markers[0]) ){
+          }
+          switch (true)
+          {
+            case ( (d.markers[0] < 30) || (70 < d.markers[0]) ): 
+              return "subtitle s04";
+              break;
+              break;
+            case ( (30 <= d.markers[0]) && (d.markers[0] < 40) ):
+              return "subtitle s13";
+              break;
+            case ( (40 <= d.markers[0]) && (d.markers[0] <= 60) ):
+              return "subtitle s2";
+              break;
+            case ( (60 < d.markers[0]) && (d.markers[0] <= 70) ):
+              return "subtitle s13";
+              break;
+          }
+        }
+      )
+      .attr("dy", "1.2em")
+      .text(function(d) { return d.subtitle; });
+};
+
+bulleT();
+
+</script>
