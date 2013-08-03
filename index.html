@@ -95,7 +95,7 @@ var a=window.Width, b=window.Height;
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
       .attr("transform", function(){
         if( direction == "vertical"){
-          return "rotate(-90)translate(-420,10)";
+          return "rotate(-90)translate("+ -(Height-(Height/4)) +",10)";
         }else{
           return "translate("+ margin.left +","+ margin.top +")";
         }
