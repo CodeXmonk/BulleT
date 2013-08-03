@@ -1,11 +1,7 @@
 (function() {
 // Simple modification based on mbostock's Bullet Charts.
-// 
-// Chart design based on the recommendations of Stephen Few. Implementation
-// based on the work of Clint Ivy, Jamie Love, and Jason Davies.
-// http://projects.instantcognition.com/protovis/bulletchart/
 d3.bulleT = function() {
-  var orient = "left", // TODO top & bottom
+  var orient = "left",
       reverse = false,
       vertical = false,
       terjedelem = bulleTTerjedelem,
@@ -28,7 +24,6 @@ d3.bulleT = function() {
       var wrap = g.select("g.wrap");
       
       if (wrap.empty()) wrap = g.append("g").attr("class", "wrap");
-      //wrap.attr("transform", "translate(0," + -width + ")");
       // Compute the x-scale.
       var x0 = d3.scale.linear()
           .domain([terjedelemz[0], terjedelemz[1]])
@@ -59,7 +54,7 @@ d3.bulleT = function() {
           .attr("y1", 0)
           .attr("y2", height);
       
-      // Update the measure rects.
+      // Append the measure rects.
       measurez.unshift(terjedelemz[1]);
       var measure = wrap.selectAll("rect.measure")
           .data(measurez);
@@ -67,10 +62,9 @@ d3.bulleT = function() {
           .attr("class", function(d, i) { return "measure s" + i; })
           .attr("width", w)
           .attr("height", height / 3)
-          //.attr("x", reverse ? x0 : 0) 
           .attr("x", reverse ? x0 : terjedelemz[0])
           .attr("y", height / 3);
-          
+      // Append rect and line marker.    
       var marker = wrap.selectAll("rect.marker")
           .data(markerz);
       marker.enter().append("rect")
@@ -87,7 +81,8 @@ d3.bulleT = function() {
           .attr("x1", x0)
           .attr("x2", x0)
           .attr("y1", height / 3)
-          .attr("y2", height-(height / 3) );     
+          .attr("y2", height-(height / 3) );
+               
       // Compute the tick format.
       var format = tickFormat || x0.tickFormat(8);
 
@@ -109,16 +104,17 @@ d3.bulleT = function() {
 
       tickEnter.append("text")
           .attr("text-anchor", "middle")
-          //.attr("transform","rotate(90)translate(-40,-35)")
           .attr("transform", function(d){
             if (vertical) {
-              //return "rotate(90)translate("+ ( height+15 ) +","+ (height-60) +")";
-              return "rotate(90)translate("+ ( height+ (height/5)*2 ) +","+ (height- (height/5.00)*11.6 ) +")";
-              //return "rotate(90)translate("+ (height+(height/5)) +","+ (height-60) +")";
+              return "rotate(90)";
             }
           })
-          .attr("dy", "1em")
-          .attr("y", height * 7 / 6)
+          .attr("dy",  function(d){
+            if(vertical){return width/60; }else{ return height+15 }
+          })
+          .attr("dx",  function(d){
+            if(vertical){return height+15 ;}
+          })
           .text(format);
     });
   }
