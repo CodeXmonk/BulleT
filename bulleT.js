@@ -7,7 +7,7 @@
 d3.bulleT = function() {
   var orient = "left", // TODO top & bottom
       reverse = false,
-      duration = 0,
+      vertical = false,
       terjedelem = bulleTTerjedelem,
       ranges = bulleTRanges,
       markers = bulleTMarkers,
@@ -18,13 +18,17 @@ d3.bulleT = function() {
 
   // For each small multiple…
   function bulleT(g) {
-      
     g.each(function(d, i) {
       var terjedelemz = terjedelem.call(this, d, i),
           rangez = ranges.call(this, d, i).slice().sort(d3.descending),
           markerz = markers.call(this, d, i),
           measurez = measures.call(this, d, i).slice().sort(d3.descending),
           g = d3.select(this);
+
+      var wrap = g.select("g.wrap");
+      
+      if (wrap.empty()) wrap = g.append("g").attr("class", "wrap");
+      //wrap.attr("transform", "translate(0," + -width + ")");
       // Compute the x-scale.
       var x0 = d3.scale.linear()
           .domain([terjedelemz[0], terjedelemz[1]])
@@ -38,66 +42,57 @@ d3.bulleT = function() {
 
       // Update the range rects.
       rangez.unshift(terjedelemz[1]);
-      var range = g.selectAll("rect.range")
+      var range = wrap.selectAll("rect.range")
           .data(rangez);
-
       range.enter().append("rect")
+          .filter( function(d, i){ if(i != 3){ return d} })
           .attr("class", function(d, i) { return "range s" + i; })
           .attr("width", w)
-          .attr("y", function(d, i) {
-            if ( (i==0)||(i==3) ){
-              return -1;
-            }else{
-              return 0;
-            }
-          })
-          .attr("height", function(d, i) {
-            if ( (i==0)||(i==3) ){
-              return height+2;
-            }else{
-              return height;
-            }
-          })
+          .attr("y", 0)
+          .attr("height",height)
           .attr("x", reverse ? x0 : terjedelemz[0]);
-          
+      range.enter().append("line")
+          .filter( function(d, i){ if(i == 3){ return d} })
+          .attr("class", "marker")
+          .attr("x1", x0)
+          .attr("x2", x0)
+          .attr("y1", 0)
+          .attr("y2", height);
+      
       // Update the measure rects.
-      measurez.unshift(terjedelemz[1]);       
-      var measure = g.selectAll("rect.measure")
+      measurez.unshift(terjedelemz[1]);
+      var measure = wrap.selectAll("rect.measure")
           .data(measurez);
-
       measure.enter().append("rect")
           .attr("class", function(d, i) { return "measure s" + i; })
           .attr("width", w)
-          .attr("height", height / 2)
+          .attr("height", height / 3)
+          //.attr("x", reverse ? x0 : 0) 
           .attr("x", reverse ? x0 : terjedelemz[0])
-          .attr("y", height / 4);
+          .attr("y", height / 3);
           
-      // Update the marker lines.
-      var markerLine = g.selectAll("line.marker")
-          .data(markerz.slice(0,1)); // 1,2
-      markerLine.enter().append("line")
-          .attr("class", function(d) { return "marker s0" })     
+      var marker = wrap.selectAll("rect.marker")
+          .data(markerz);
+      marker.enter().append("rect")
+          .filter( function(d, i){ if(i == 1){ return d} })
+          .attr("class", "marker s1")
+          .attr("width", 6)
+          .attr("y", -(height/10))
+          .attr("height",function(d) {return height+8;})
+          .attr("x", x0)
+          .attr("transform", "translate(-3,0)");
+      marker.enter().append("line")
+          .filter( function(d, i){ if(i == 0){ return d} })
+          .attr("class", "marker s0")
           .attr("x1", x0)
           .attr("x2", x0)
-          .attr("y1", function(d) {return height / 4;})
-          .attr("y2", function(d) {return height - height / 4;}); 
-          
-      // Update the marker lines.
-      var markerRect = g.selectAll("rect.marker")
-          .data(markerz.slice(1,2)); // 
-      markerRect.enter().append("rect")
-          .attr("class", function(d) { return "marker s1" })     
-          .attr("x", x0)
-          .attr("transform", "translate(-3,0)")
-          .attr("width", 6)
-          .attr("y", -4)
-          .attr("height", function(d) {return height+8;});
-           
+          .attr("y1", height / 3)
+          .attr("y2", height-(height / 3) );     
       // Compute the tick format.
       var format = tickFormat || x0.tickFormat(8);
 
       // Update the tick groups.
-      var tick = g.selectAll("g.tick")
+      var tick = g.selectAll("tick")
           .data(x0.ticks(8), function(d) {
             return this.textContent || format(d);
           });
@@ -114,6 +109,14 @@ d3.bulleT = function() {
 
       tickEnter.append("text")
           .attr("text-anchor", "middle")
+          //.attr("transform","rotate(90)translate(-40,-35)")
+          .attr("transform", function(d){
+            if (vertical) {
+              //return "rotate(90)translate("+ ( height+15 ) +","+ (height-60) +")";
+              return "rotate(90)translate("+ ( height+ (height/5)*2 ) +","+ (height- (height/5.00)*11.6 ) +")";
+              //return "rotate(90)translate("+ (height+(height/5)) +","+ (height-60) +")";
+            }
+          })
           .attr("dy", "1em")
           .attr("y", height * 7 / 6)
           .text(format);
@@ -156,6 +159,11 @@ d3.bulleT = function() {
     return bulleT;
   };
 //*/
+  bulleT.vertical = function(x) {
+    if (!arguments.length) return vertical;
+    vertical = x;
+    return bulleT;
+  };
   bulleT.width = function(x) {
     if (!arguments.length) return width;
     width = x;
