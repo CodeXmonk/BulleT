@@ -78,7 +78,7 @@ d3.bulleT = function() {
           .attr("class", "marker s1")
           .attr("width", 6)
           .attr("y", -(height/10))
-          .attr("height",function(d) {return height+8;})
+          .attr("height",function(d) {return height+(height/5);})
           .attr("x", x0)
           .attr("transform", "translate(-3,0)");
       marker.enter().append("line")
