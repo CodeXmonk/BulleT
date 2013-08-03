@@ -61,9 +61,9 @@ d3.bulleT = function() {
       measure.enter().append("rect")
           .attr("class", function(d, i) { return "measure s" + i; })
           .attr("width", w)
-          .attr("height", height / 3)
+          .attr("height", height / 2)
           .attr("x", reverse ? x0 : terjedelemz[0])
-          .attr("y", height / 3);
+          .attr("y", height / 4);
       // Append rect and line marker.    
       var marker = wrap.selectAll("rect.marker")
           .data(markerz);
@@ -80,8 +80,8 @@ d3.bulleT = function() {
           .attr("class", "marker s0")
           .attr("x1", x0)
           .attr("x2", x0)
-          .attr("y1", height / 3)
-          .attr("y2", height-(height / 3) );
+          .attr("y1", height / 4)
+          .attr("y2", height-(height / 4) );
                
       // Compute the tick format.
       var format = tickFormat || x0.tickFormat(8);
