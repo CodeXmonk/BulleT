@@ -76,12 +76,12 @@ var chart = d3.bulleT()
     .height(height);
     
 function bulleT(whichData,whereToPut,direction) {
-    var a=500, b=60;
+var a=window.Width, b=window.Height;
   if( direction == "vertical"){
     Height=a;Width=b+10;
     vertical = true;
   }else{
-    Height=b;Width=a;
+    Height=a;Width=b;
     vertical = false;
   }
    
